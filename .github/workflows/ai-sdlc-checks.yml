@@ -82,17 +82,8 @@ jobs:
           if [ "$IS_PR" = true ] && [ "$counted" = true ] && grep -qiE 'VERDICT:|\*\*Verdict:\*\*|Reviewed head:' <<<"$BODY"$'\n'"$FROM"; then run=true; fi
           echo "run=$run" >> "$GITHUB_OUTPUT"
 
-  # Transition drill (ai-sdlc #731): hold the loader call so it runs after the promotion lands.
-  drill-delay:
-    if: github.event_name == 'pull_request_target'
-    runs-on: ubuntu-24.04
-    permissions: {}
-    timeout-minutes: 40
-    steps:
-      - run: sleep 1500
-
   checks:
-    needs: [comment-filter, drill-delay]
+    needs: comment-filter
     # A status function permits the deliberately skipped PR dependency, without reviving cancellation.
     # A comment needs a successful filter and its explicit pass output; errors always hold.
     if: >-
